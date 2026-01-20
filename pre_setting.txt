@@ -1,0 +1,23 @@
+{
+  "mh_per_month": 146.0,
+  "Assembly": {
+    "type": "front_loaded",
+    "sigma": 0.3
+  },
+  "Erection": {
+    "type": "normal",
+    "sigma": 0.2
+  },
+  "Painting": {
+    "type": "s_curve",
+    "sigma": 0.25
+  },
+  "Outfitting": {
+    "type": "s_curve",
+    "sigma": 0.25
+  },
+  "Sea Trial": {
+    "type": "back_loaded",
+    "sigma": 0.15
+  }
+}
