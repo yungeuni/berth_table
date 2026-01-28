@@ -266,28 +266,31 @@ if uploaded_file is not None:
         # -------------------------------------------------------
         st.subheader("1. Interactive Chart Preview")
         
-        # [수정] Y_Label(문자열) 생성 후, 이를 기준으로 알파벳 정렬 수행
-        # 기존: df_plot = df_plot.sort_values(by=['Yard', 'Berth', 'KL']) -> 정렬 후 라벨 생성
-        
         # 1. Y-Axis Label 생성
         df_plot['Y_Label'] = df_plot['Yard'].astype(str) + " | " + df_plot['Berth'].astype(str)
         
-        # 2. Label(알파벳순) -> 날짜(KL) 순으로 정렬
-        df_plot = df_plot.sort_values(by=['Y_Label', 'KL'])
+        # 2. [핵심 수정] 정렬 순서를 명시적으로 리스트로 만듭니다.
+        # (Yard 이름 알파벳 순 -> Berth 이름 알파벳 순)
+        sorted_y_labels = sorted(df_plot['Y_Label'].unique())
         
-        # Modify Title for Overlaps (기존 코드 유지)
+        # Modify Title for Overlaps
         df_plot['Title_Disp'] = df_plot.apply(
             lambda x: f"⛔ {x['Ship No.']}" if x['Ship No.'] in overlapping_ships else x['Ship No.'], axis=1
         )
 
         fig = px.timeline(
-            df_plot, x_start="KL", x_end="LC", 
+            df_plot, 
+            x_start="KL", x_end="LC", 
             y="Y_Label",
             color="Ship Class",
             text="Ship No.", 
             hover_data=["Title_Disp"], 
-            height=700
+            height=700,
+            # [핵심 수정] 여기서 강제로 순서를 주입합니다.
+            category_orders={"Y_Label": sorted_y_labels}
         )
+        
+        # autorange="reversed" 때문에 리스트의 첫 번째(A)가 '맨 위'에 표시됩니다.
         fig.update_yaxes(autorange="reversed", title="Yard | Berth")
         fig.update_xaxes(dtick="M3", tickformat="%Y-%m", showgrid=True)
         st.plotly_chart(fig, use_container_width=True)
