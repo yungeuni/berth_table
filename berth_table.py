@@ -260,19 +260,22 @@ if uploaded_file is not None:
                     st.divider()      # [추가] 항목 간 구분선 추가
         else:
             st.success("✅ No overlaps detected.")
-        
+
         # -------------------------------------------------------
         # 1. Interactive Chart
         # -------------------------------------------------------
         st.subheader("1. Interactive Chart Preview")
         
-        # Sort: Yard -> Berth -> Date
-        df_plot = df_plot.sort_values(by=['Yard', 'Berth', 'KL'])
+        # [수정] Y_Label(문자열) 생성 후, 이를 기준으로 알파벳 정렬 수행
+        # 기존: df_plot = df_plot.sort_values(by=['Yard', 'Berth', 'KL']) -> 정렬 후 라벨 생성
         
-        # Create Y-Axis Label
+        # 1. Y-Axis Label 생성
         df_plot['Y_Label'] = df_plot['Yard'].astype(str) + " | " + df_plot['Berth'].astype(str)
         
-        # Modify Title for Overlaps
+        # 2. Label(알파벳순) -> 날짜(KL) 순으로 정렬
+        df_plot = df_plot.sort_values(by=['Y_Label', 'KL'])
+        
+        # Modify Title for Overlaps (기존 코드 유지)
         df_plot['Title_Disp'] = df_plot.apply(
             lambda x: f"⛔ {x['Ship No.']}" if x['Ship No.'] in overlapping_ships else x['Ship No.'], axis=1
         )
